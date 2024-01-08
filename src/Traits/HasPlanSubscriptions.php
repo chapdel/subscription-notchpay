@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Laravelcm\Subscriptions\Models\Subscription;
 use Laravelcm\Subscriptions\Models\Plan;
 use Laravelcm\Subscriptions\Services\Period;
+use NotchPay\NotchPay;
+use NotchPay\Payment;
 
 trait HasPlanSubscriptions
 {
@@ -83,6 +85,7 @@ trait HasPlanSubscriptions
             'trial_ends_at' => $trial->getEndDate(),
             'starts_at' => $period->getStartDate(),
             'ends_at' => $period->getEndDate(),
+            'status' => $plan->price == 0 ? 'paid': 'pending'
         ]);
     }
 }

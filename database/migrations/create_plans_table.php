@@ -31,7 +31,7 @@ return new class () extends Migration {
             $table->unsignedTinyInteger('prorate_extend_due')->nullable();
             $table->unsignedSmallInteger('active_subscribers_limit')->nullable();
             $table->unsignedSmallInteger('sort_order')->default(0);
-
+            $table->dateTime('paid_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

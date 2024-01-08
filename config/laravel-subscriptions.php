@@ -41,5 +41,4 @@ return [
         'subscription' => Subscription::class,
         'subscription_usage' => SubscriptionUsage::class,
     ],
-
 ];

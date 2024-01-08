@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Laravelcm\Subscriptions\Traits\BelongsToPlan;
 use Laravelcm\Subscriptions\Services\Period;
 use Laravelcm\Subscriptions\Traits\HasSlug;
+use Laravelcm\Subscriptions\Traits\HasTransactions;
 use Laravelcm\Subscriptions\Traits\HasTranslations;
 use LogicException;
 use Spatie\Sluggable\SlugOptions;
@@ -69,6 +70,8 @@ class Subscription extends Model
     use HasFactory;
     use HasSlug;
     use HasTranslations;
+
+    use HasTransactions;
     use SoftDeletes;
 
     protected $fillable = [
@@ -96,6 +99,7 @@ class Subscription extends Model
         'cancels_at' => 'datetime',
         'canceled_at' => 'datetime',
         'deleted_at' => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     /**
@@ -161,6 +165,7 @@ class Subscription extends Model
         return $this->trial_ends_at && Carbon::now()->lt($this->trial_ends_at);
     }
 
+
     public function canceled(): bool
     {
         return $this->canceled_at && Carbon::now()->gte($this->canceled_at);
@@ -179,6 +184,15 @@ class Subscription extends Model
             $this->ends_at = $this->canceled_at;
         }
 
+        $this->save();
+
+        return $this;
+    }
+
+    public function markAsPaid(): self
+    {
+        $this->paid_at = now();
+        $this->status = 'paid';
         $this->save();
 
         return $this;
@@ -443,7 +457,6 @@ class Subscription extends Model
     public function getFeatureValue(string $featureSlug): ?string
     {
         $feature = $this->plan->features()->where('slug', $featureSlug)->first();
-
         return $feature->value ?? null;
     }
 }
